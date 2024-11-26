@@ -11,8 +11,10 @@ from typing import Optional
 class ProcessData:
     version: str
     input_filename: str
-    buy_nlp_long: Optional[str] = 'go_long'
-    buy_nlp_short: Optional[str] = 'go_short'
+    buy_nlp_long: Optional[str] = 'go_short'
+    buy_nlp_short: Optional[str] = 'go_long'
+    buy_imit_long: Optional[str] = 'go_short'
+    buy_imit_short: Optional[str] = 'go_long'
     
     def add_buy_sell(self):
         df = pd.read_csv(f'{self.input_filename}')
@@ -35,9 +37,10 @@ class ProcessData:
         conditions = []
 
         conditions.append(
-                df['nlp-enter-long (entry)'] == self.buy_nlp_long
+                df['nlp-enter-short (entry)'] == self.buy_nlp_short
             )
-        conditions.append(df['nlp-enter-short (entry)'] != 'do_nothing')
+        #conditions.append(df['nlp-enter-short (entry)'] != 'do_nothing')
+        conditions.append(df['buy_imit_short (entry)'] == self.buy_imit_short)
         conditions.append(df['profit_abs'] > 0)
         conditions.append(df['volume (entry)'] > 0)
         
@@ -49,9 +52,10 @@ class ProcessData:
         conditions2 = []
 
         conditions2.append(
-                df['nlp-enter-short (entry)'] == self.buy_nlp_short
+                df['nlp-enter-long (entry)'] == self.buy_nlp_long
             )
-        conditions2.append(df['nlp-enter-long (entry)'] != 'do_nothing')
+        #conditions2.append(df['nlp-enter-long (entry)'] != 'do_nothing')
+        conditions2.append(df['buy_imit_long (entry)'] == self.buy_imit_long)
         conditions2.append(df['profit_abs'] > 0)
         conditions2.append(df['volume (entry)'] > 0)
         
@@ -88,17 +92,16 @@ class ProcessData:
     def select_cols(self):
 
         raw_data = self.add_buy_sell()
-        
+
         selected_cols = [
             'open (entry)', 'high (entry)', 'ema-26 (entry)', \
-            'ema-12 (entry)', 'low (entry)', 'mean-grad-hist (entry)', \
-            'close (entry)', 'volume (entry)', 'sma-25 (entry)', \
-            'long_jcrosk (entry)', 'short_kdj (entry)', 'action'
+                'ema-12 (entry)', 'low (entry)', 'mean-grad-hist (entry)', \
+                'close (entry)', 'volume (entry)', 'sma-25 (entry)', \
+                'long_jcrosk (entry)', 'short_kdj (entry)', 'buy_imit_short (exit)', \
+                 'buy_imit_long (exit)', 'action'
         ]
 
-        cleaned_data = raw_data[selected_cols]
-        
-        return cleaned_data
+        return raw_data[selected_cols]
     
     def export_results_file (self):
         data = self.select_cols()

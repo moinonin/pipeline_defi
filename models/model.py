@@ -12,6 +12,7 @@ from pandas import DataFrame, Series
 from dataclasses import dataclass
 import fire, os, sys
 from pathlib import Path
+import tqdm
 
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
