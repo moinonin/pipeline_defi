@@ -11,74 +11,49 @@ from typing import Optional
 class ProcessData:
     version: str
     input_filename: str
-    buy_nlp_long: Optional[str] = 'go_short'
-    buy_nlp_short: Optional[str] = 'go_long'
-    buy_imit_long: Optional[str] = 'go_short'
-    buy_imit_short: Optional[str] = 'go_long'
+    sell_short_nlp_custom_exit: Optional[str] = 'go_long'
+    buy_nlp_short: Optional[str] = 'go_short'
+
     
     def add_buy_sell(self):
         df = pd.read_csv(f'{self.input_filename}')
-        print(df['profit_abs'].head())
+        print(f'data length -->: {len(df)}')
+        print(df['exit_reason'].value_counts())
         cols = df.columns
         print(cols)
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             if pd.isna(row.values).any():
                 print(row.value)
 
-        '''
-        reject_cols = ['stop_loss']
-
-        for col in cols:
-            if col in reject_cols:
-                df = df[df['exit_reason'] != f'{col}']
-        '''
         df.drop(['Unnamed: 0', 'pair'], axis=1, inplace=True)
 
-        conditions = []
-
-        conditions.append(
-                df['nlp-enter-short (entry)'] == self.buy_nlp_short
-            )
-        #conditions.append(df['nlp-enter-short (entry)'] != 'do_nothing')
-        conditions.append(df['buy_imit_short (entry)'] == self.buy_imit_short)
-        conditions.append(df['profit_abs'] > 0)
-        conditions.append(df['volume (entry)'] > 0)
-        
-        if conditions:
+        if conditions := [
+            df['nlp-enter-short (entry)'] == self.buy_nlp_short,
+            df['volume (entry)'] > 0,
+        ]:
             df.loc[
                 reduce(lambda x, y: x & y, conditions),
-                ['enter_long', 'action']] = (1, 'go_long')
+                ['enter_short', 'action']] = (1, 'go_short')
 
-        conditions2 = []
-
-        conditions2.append(
-                df['nlp-enter-long (entry)'] == self.buy_nlp_long
-            )
-        #conditions2.append(df['nlp-enter-long (entry)'] != 'do_nothing')
-        conditions2.append(df['buy_imit_long (entry)'] == self.buy_imit_long)
-        conditions2.append(df['profit_abs'] > 0)
-        conditions2.append(df['volume (entry)'] > 0)
-        
-        if conditions2:
+        if conditions2 := [
+            df['nlp-exit-short (entry)'] == self.sell_short_nlp_custom_exit,
+            df['volume (entry)'] > 0,
+        ]:
             df.loc[
                 reduce(lambda x, y: x & y, conditions2),
-                ['enter_short', 'action']] = (-1, 'go_short')
-
-        conditions3 = []
+                ['enter_long', 'action']] = (-1, 'go_long')
 
         '''
         conditions3.append(
-            (df['grads-ratio (entry)'] <=   1.0) &
-            (df['grads-ratio (entry)'] >=   -3.0)
+            (df['enter_short'] !=   1.0) &
+            (df['enter_long'] !=   -1.0)
         )
         '''
-        conditions3.append(df['profit_ratio'] <= 0)
-        #conditions3.append(df['nlp-enter-long (entry)'] == 'do_nothing')
-        #conditions3.append(df['nlp-enter-short (entry)'] == 'do_nothing')
-        #conditions3.append(df['exit_reason'] == 'stop_loss')
-        conditions3.append(df['volume (entry)'] > 0)
-
-        if conditions3:
+        if conditions3 := [df['profit_abs'] <= 0,
+                           df['volume (entry)'] > 0,
+                           #df['enter_short'] != 1.0,
+                           #df['enter_long'] != -1.0
+        ]:
             df.loc[
                 reduce(lambda x, y: x & y, conditions3),
                 ['enter_none', 'action']] = (0, 'do_nothing')
@@ -86,7 +61,7 @@ class ProcessData:
         df_copy = df.copy()
         short_kdj = df['short_kdj (entry)'].astype(int)
         df_copy['short_kdj (entry)'] = short_kdj
-        
+
         return df_copy
     
     def select_cols(self):
@@ -97,10 +72,11 @@ class ProcessData:
             'open (entry)', 'high (entry)', 'ema-26 (entry)', \
                 'ema-12 (entry)', 'low (entry)', 'mean-grad-hist (entry)', \
                 'close (entry)', 'volume (entry)', 'sma-25 (entry)', \
-                'long_jcrosk (entry)', 'short_kdj (entry)', 'buy_imit_short (exit)', \
-                 'buy_imit_long (exit)', 'action'
+                'long_jcrosk (entry)', 'short_kdj (entry)', \
+                'imit-enter-short (entry)', 'sma-05 (entry)', 'sma-07 (entry)', \
+                'imit-exit-short (entry)', 'exit_reason','action'
         ]
-
+        print(raw_data.exit_reason.value_counts())
         return raw_data[selected_cols]
     
     def export_results_file (self):
