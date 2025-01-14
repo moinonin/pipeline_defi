@@ -11,10 +11,10 @@ from typing import Optional
 class ProcessData:
     strat_version: str
     input_filename: str
-    buy_long_large_rl: Optional[str] = 'go_long'
+    #buy_long_large_rl: Optional[str] = 'go_long'
     buy_long_small_rl: Optional[str] = 'go_long'
-    buy_short_small_rl: Optional[str] = 'do_nothing'
-    buy_short_larg_rl: Optional[str] = 'do_nothing'
+    #buy_short_small_rl: Optional[str] = 'do_nothing'
+    buy_short_large_rl: Optional[str] = 'do_nothing'
 
     
     def add_buy_sell(self):
@@ -32,10 +32,10 @@ class ProcessData:
 
         if conditions := [
             #df['long-large-rl (entry)'] != self.buy_long_large_rl,
-            #df['long-small-rl (entry)'] != self.buy_long_small_rl,
-            df['first-long (entry)'] == True,
-            df['second-long (entry)'] == True,
-            df['short-sig (entry)'] != 1,
+            df['long-small-rl (entry)'] == self.buy_long_small_rl,
+            #df['first-long (entry)'] == True,
+            #df['second-long (entry)'] == True,
+            #df['short-sig (entry)'] != 1,
             df['profit_abs'] > 0,
             df['volume (entry)'] > 0,
         ]:
@@ -44,11 +44,11 @@ class ProcessData:
                 ['enter_long', 'action']] = (1, 'go_long')
 
         if conditions2 := [
-            #df['short-small-rl (entry)'] == self.buy_short_small_rl,
-            #df['short-large-rl (entry)'] == self.buy_short_larg_rl,
-            df['first-short (entry)'] == True,
-            df['second-short (entry)'] == True,
-            df['long-sig (entry)'] != 1,
+            #df['short-small-rl (entry)'] != self.buy_short_small_rl,
+            df['short-large-rl (entry)'] == self.buy_short_large_rl,
+            #df['first-short (entry)'] == True,
+            #df['second-short (entry)'] == True,
+            #df['long-sig (entry)'] != 1,
             df['profit_abs'] > 0,
             df['volume (entry)'] > 0,
         ]:
@@ -57,9 +57,9 @@ class ProcessData:
                 ['enter_short', 'action']] = (-1, 'go_short')
 
         if conditions3 := [
-            df['profit_abs'] <= 0,
-            #df['enter_short'] != -1.0,
-            #df['enter_long'] != 1.0
+            #df['profit_abs'] <= 0,
+            df['enter_short'] != -1.0,
+            df['enter_long'] != 1.0,
             df['volume (entry)'] > 0
         ]:
             df.loc[

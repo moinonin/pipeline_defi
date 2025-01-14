@@ -39,7 +39,7 @@ def process_strategy(strat_ver: str, data_size: int):
 
     # Filter what you want to test
     #df = df[df['profit_abs'] < 0]
-    #df = df[df['exit_reason'] == 'long-exit-profit']
+    df = df[df['exit_reason'] != 'stop_loss']
     #df = df[df['enter_reason'] == 'first_buy']
     df = df.iloc[0:data_size]
     print(df.columns)
