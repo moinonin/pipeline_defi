@@ -11,10 +11,13 @@ from typing import Optional
 class ProcessData:
     strat_version: str
     input_filename: str
-    #buy_long_large_rl: Optional[str] = 'go_long'
-    buy_long_small_rl: Optional[str] = 'go_long'
-    #buy_short_small_rl: Optional[str] = 'do_nothing'
+    buy_long_bid_rl: Optional[str] = 'do_nothing'
     buy_short_large_rl: Optional[str] = 'do_nothing'
+    buy_long_small_rl: Optional[str] = 'go_long'
+    buy_short_bid_rl: Optional[str] = 'go_short'
+    sell_short_nlp_custom_exit: Optional[str] = 'go_long'
+    buy_nlp_short: Optional[str] = 'go_short'
+
 
     
     def add_buy_sell(self):
@@ -32,11 +35,13 @@ class ProcessData:
 
         if conditions := [
             #df['long-large-rl (entry)'] != self.buy_long_large_rl,
-            df['long-small-rl (entry)'] == self.buy_long_small_rl,
+            #df['long-small-rl (entry)'] == self.buy_long_small_rl,
+            #df['long-bid-rl (entry)'] == self.buy_long_bid_rl,
+            df['nlp-exit-short (entry)'] == self.sell_short_nlp_custom_exit,
             #df['first-long (entry)'] == True,
             #df['second-long (entry)'] == True,
             #df['short-sig (entry)'] != 1,
-            df['profit_abs'] > 0,
+            #df['profit_abs'] > 0,
             df['volume (entry)'] > 0,
         ]:
             df.loc[
@@ -45,12 +50,14 @@ class ProcessData:
 
         if conditions2 := [
             #df['short-small-rl (entry)'] != self.buy_short_small_rl,
-            df['short-large-rl (entry)'] == self.buy_short_large_rl,
+            #df['short-large-rl (entry)'] == self.buy_short_large_rl,
+            #df['short-bid-rl (entry)'] == self.buy_short_bid_rl,
+            df['nlp-enter-short (entry)'] == self.buy_nlp_short,
             #df['first-short (entry)'] == True,
             #df['second-short (entry)'] == True,
             #df['long-sig (entry)'] != 1,
-            df['profit_abs'] > 0,
-            df['volume (entry)'] > 0,
+            #df['profit_abs'] > 0,
+            df['volume (entry)'] > 0
         ]:
             df.loc[
                 reduce(lambda x, y: x & y, conditions2),
@@ -85,7 +92,8 @@ class ProcessData:
             'imit-exit-short (entry)', 'nlp-enter-long (entry)', \
             'nlp-enter-short (entry)', 'profit_abs', 'enter_reason', \
             'long-small-rl (entry)', 'short-small-rl (entry)', 'long-large-rl (entry)', \
-            'short-large-rl (entry)', 'exit_reason','action'
+            'short-large-rl (entry)', 'long-bid-rl (entry)', 'short-bid-rl (entry)', 'exit_reason','action', \
+            'nlp-exit-short (entry)'
         ]
         print(raw_data.exit_reason.value_counts())
         found_cols = []
