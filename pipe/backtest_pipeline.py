@@ -11,12 +11,13 @@ from typing import Optional
 class ProcessData:
     strat_version: str
     input_filename: str
-    buy_long_bid_rl: Optional[str] = 'go_short'
-    buy_short_large_rl: Optional[str] = 'do_nothing'
+    buy_long_bid_rl: Optional[str] = 'go_long'
+    buy_short_large_rl: Optional[str] = 'go_short'
     buy_long_small_rl: Optional[str] = 'go_long'
-    buy_long_large_rl: Optional[str] = 'go_short'
+    buy_long_large_rl: Optional[str] = 'go_long'
     buy_short_bid_rl: Optional[str] = 'go_short'
-    buy_short_small_rl: Optional[str] = 'go_long'
+    buy_short_small_rl: Optional[str] = 'go_short'
+    
     sell_short_nlp_custom_exit: Optional[str] = 'go_long'
     buy_nlp_short: Optional[str] = 'go_short'
 
@@ -36,9 +37,9 @@ class ProcessData:
         df.drop(['Unnamed: 0', 'pair'], axis=1, inplace=True)
 
         if conditions := [
-            df['long-large-rl (entry)'] != self.buy_long_large_rl,
+            df['long-large-rl (entry)'] == self.buy_long_large_rl,
             df['long-small-rl (entry)'] == self.buy_long_small_rl,
-            df['long-bid-rl (entry)'] != self.buy_long_bid_rl,
+            df['long-bid-rl (entry)'] == self.buy_long_bid_rl,
             #df['nlp-exit-short (entry)'] == self.sell_short_nlp_custom_exit,
             #df['first-long (entry)'] == True,
             #df['second-long (entry)'] == True,
@@ -51,9 +52,11 @@ class ProcessData:
                 ['enter_long', 'action']] = (1, 'go_long')
 
         if conditions2 := [
-            df['short-small-rl (entry)'] != self.buy_short_small_rl,
+            df['short-large-rl (entry)'] == self.buy_short_large_rl,
+            #df['short-small-rl (entry)'] == self.buy_short_small_rl,
             #df['short-large-rl (entry)'] == self.buy_short_large_rl,
             df['short-bid-rl (entry)'] == self.buy_short_bid_rl,
+            #df['long-small-rl (entry)'] != self.buy_long_small_rl,
             #df['nlp-enter-short (entry)'] == self.buy_nlp_short,
             #df['first-short (entry)'] == True,
             #df['second-short (entry)'] == True,

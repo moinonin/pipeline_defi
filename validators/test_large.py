@@ -35,7 +35,7 @@ def process_strategy(strat_ver: str, data_size: int):
     #print(df['exit_reason'].value_counts())
 
     #df.drop(['open_date'], inplace=True, axis=1)
-    df['short_kdj'] = df['short_kdj'].astype(int)
+    #df['short_kdj'] = df['short_kdj'].astype(int)
     print(df.head())
 
     # Filter what you want to test

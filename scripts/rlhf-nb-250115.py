@@ -9,38 +9,65 @@ import matplotlib.pyplot as plt
 import os
 
 #!pip install matplotlib
-
+"""
+    'spreadsheets/rlhf_20250104_6.csv',
+    'spreadsheets/rlhf_159nlp.csv',
+    'spreadsheets/rlhf_1064_2.csv',
+    'spreadsheets/rlhf_large_1072.csv',
+    'spreadsheets/shufled_rlhf_11rl.csv',
+    'spreadsheets/rlhf_large_12rl.csv',
+    'spreadsheets/rlhf_large_15rl.csv',
+    'spreadsheets/rlhf_large_19rl.csv',
+    'spreadsheets/rlhf_large_23rl.csv',
+    'spreadsheets/rlhf_large_25rl.csv',
+    'spreadsheets/rlhf_large_24rl.csv',
+    'spreadsheets/rlhf_large_26rl.csv',
+    'spreadsheets/rlhf_large_157nlp.csv',
+    'spreadsheets/rlhf_large_157nlpgate.csv',
+    'spreadsheets/rlhf_large_29rl.csv',
+    'spreadsheets/rlhf_large_30rl.csv',
+    'spreadsheets/rlhf_large_31rl.csv',
+    'spreadsheets/rlhf_large_32rl.csv',
+    'spreadsheets/rlhf_large_33rl.csv',
+    'spreadsheets/rlhf_large_35rl.csv',
+    'spreadsheets/rlhf_large_36rl.csv',
+    'spreadsheets/rlhf_large_37rl.csv'
+"""
 indicatorfiles = [
-'spreadsheets/rlhf_20250104_6.csv',
-'spreadsheets/rlhf_159nlp.csv',
-'spreadsheets/rlhf_1064_2.csv',
-'spreadsheets/rlhf_large_1072.csv',
-'spreadsheets/shufled_rlhf_11rl.csv',
-'spreadsheets/rlhf_large_12rl.csv',
-'spreadsheets/rlhf_large_15rl.csv',
-'spreadsheets/rlhf_large_19rl.csv'
+
+    'spreadsheets/rlhf_large_37rl.csv'
 ]
 
 Hyperparameters = [
-    #[0.25, 0.95, 1.0, 0.99, 0.99, 10000],
-    [0.9, 0.95, 1.0, 0.99, 0.99, 8000],
-    #[0.7, 0.75, 1.0, 0.97, 0.999, 28000],
-    [0.05, 0.95, 1.0, 0.999, 0.995, 12000],
-    #[1, 0.95, 0.1, 0.96, 0.96, 12000],
-    #[0.25, 0.99, 0.01, 0.997, 0.99, 8000],
-    #[1, 0.75, 0.05, 0.999, 0.999, 10000],
-    [0.01, 0.85, 0.01, 0.95, 0.95, 12000],
+    #[0.1, 0.9, 0.1, 0.99, 0.995, 4000],
+    #[0.005, 0.75, 0.1, 0.95, 0.999, 12000],
+    #[0.001, 0.75, 1.0, 0.99, 0.99, 30000],
+    [1, 0.75, 0.005, 0.95, 0.95, 22000],
     #[0.01, 0.99, 1.0, 0.95, 0.99, 16000],
-    [0.05, 0.99, 0.5, 0.99, 0.997, 6000],
+    [0.7, 0.99, 1.0, 0.95, 0.997, 8000],
+    #[0.01, 0.95, 1.0, 0.997, 0.995, 26000],
     #[0.25, 0.95, 0.01, 0.997, 0.999, 14000],
-    [0.01, 0.95, 1.0, 0.997, 0.995, 26000],
-    #[0.9, 0.99, 0.5, 0.995, 0.95, 12000],
-    #[1, 0.75, 0.005, 0.95, 0.95, 22000],
-    [0.005, 0.75, 0.1, 0.95, 0.999, 12000],
-    #[0.25, 0.75, 0.01, 0.995, 0.999, 20000]
+    #[0.5, 0.85, 0.5, 0.997, 0.997, 14000],
+    #[0.01, 0.85, 0.01, 0.95, 0.95, 12000],
+    [0.9, 0.99, 0.5, 0.995, 0.95, 12000],
+    #[0.05, 0.9, 0.5, 0.95, 0.999, 4000],
+    #[0.05, 0.99, 0.5, 0.99, 0.997, 6000],
+    [1, 0.75, 0.05, 0.999, 0.999, 10000],
+    #[0.9, 0.95, 1.0, 0.99, 0.99, 8000],
+    #[0.25, 0.75, 0.01, 0.995, 0.999, 20000],
+    #[0.3, 0.75, 1.0, 0.995, 0.99, 10000],
+    [1, 0.9, 1.0, 0.999, 0.999, 10000],
+    [0.7, 0.75, 1.0, 0.97, 0.999, 28000],
+    #[0.05, 0.95, 1.0, 0.999, 0.995, 12000],
+    #[0.7, 0.95, 0.5, 0.999, 0.99, 16000],
+    #[0.25, 0.95, 1.0, 0.99, 0.99, 10000],
+    #[0.25, 0.99, 0.01, 0.997, 0.99, 8000],
+    #[1, 0.95, 0.1, 0.96, 0.96, 12000],
+    #[0.9, 0.9, 0.005, 0.95, 0.999, 10000],
+    #[0.05, 0.85, 0.01, 0.997, 0.95, 4000]
 ]
 
-
+dfx = pd.read_csv(indicatorfiles[0])
 
 for item in indicatorfiles:
     if not os.path.exists(item):
@@ -48,7 +75,9 @@ for item in indicatorfiles:
     else:
         for param in Hyperparameters:
 
-            df0 = pd.read_csv(f'{item}')
+            df0 =  pd.read_csv(f'{item}')
+
+            #df0 = df0[df0['is_short'] == 0]
 
             df0['ask'] = df0['close'] * df0['volume']/(df0['close'] + df0['open'])
 
@@ -74,7 +103,7 @@ for item in indicatorfiles:
 
                 return train_data
 
-            train_data = df0 #prep_data(df0)
+            train_data = df0
 
             train_data.head(2)
 
@@ -192,7 +221,7 @@ for item in indicatorfiles:
 
 
 
-            def predict_action(state, q_table, state_to_index, action_mapping, default_action: str = None):
+            def predict_action(state, q_table, state_to_index, action_mapping, default_action: str = 'do_nothing'):
                 state_tuple = tuple(state.flatten())
 
                 state_index = state_to_index.get(state_tuple, -1)
@@ -202,7 +231,10 @@ for item in indicatorfiles:
                         q_values = q_table[state_index]
                     except ValueError as e:
                         print(e)
-                        #return default_action
+                        return default_action
+                elif state_index >= len(q_table):
+                    print("Warning: Nearest neighbor index out of bounds. Using default action.")
+                    return default_action
                 else:
                     state_tuples = list(state_to_index.keys())
                     kdtree = KDTree(state_tuples)
