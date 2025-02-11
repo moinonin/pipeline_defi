@@ -10,6 +10,7 @@ import os
 
 #!pip install matplotlib
 """
+
     'spreadsheets/rlhf_20250104_6.csv',
     'spreadsheets/rlhf_159nlp.csv',
     'spreadsheets/rlhf_1064_2.csv',
@@ -40,18 +41,24 @@ import os
     'spreadsheets/rlhf_large_42rl.csv',
     'spreadsheets/rlhf_large_154nlp.csv',
     'spreadsheets/rlhf_large_159nlp.csv',
+    'spreadsheets/rlhf_large_47rl.csv',
     'spreadsheets/rlhf_large_46rl.csv',
-    'spreadsheets/rlhf_large_47rl.csv'
+    'spreadsheets/rlhf_large_48rl.csv',
 """
 indicatorfiles = [
 
-    #'spreadsheets/rlhf_small_154nlp_refined.csv',
     #'spreadsheets/rlhf_large_46rl_refined.csv',
-    'spreadsheets/rlhf_bid_47rl_refined.csv'
+    #'spreadsheets/rlhf_large_159nlp_refined.csv',
+    #'spreadsheets/rlhf_large_65-66-68rl.csv',
+    'spreadsheets/rlhf_large_71rl_refined.csv',
+
+
 
 ]
 
 Hyperparameters = [
+
+    [0.05, 0.95, 0.05, 0.99, 0.95, 8000],
     [0.5, 0.85, 0.5, 0.997, 0.997, 14000],
     [0.005, 0.85, 0.005, 0.99, 0.997, 6000],
     [0.5, 0.75, 0.005, 0.95, 0.999, 14000],
@@ -60,7 +67,6 @@ Hyperparameters = [
     [0.001, 0.75, 1.0, 0.99, 0.99, 30000],
     [0.1, 0.9, 0.1, 0.99, 0.995, 4000],
     [0.005, 0.75, 0.1, 0.95, 0.999, 12000],
-    [0.001, 0.75, 1.0, 0.99, 0.99, 30000],
     [1, 0.75, 0.005, 0.95, 0.95, 22000],
     [0.7, 0.99, 1.0, 0.95, 0.997, 8000],
     [0.01, 0.95, 1.0, 0.997, 0.995, 26000],
@@ -84,7 +90,9 @@ Hyperparameters = [
     [0.05, 0.85, 0.01, 0.997, 0.95, 4000],
     [0.01, 0.9, 0.5, 0.999, 0.999, 1500],
     [1, 0.85, 1.0, 0.95, 0.997, 21000],
-    [1, 0.9, 1.0, 0.99, 0.99, 11000]
+    [1, 0.9, 1.0, 0.99, 0.99, 11000],
+    [0.7, 0.9, 0.05, 0.95, 0.95, 20000]
+
 
 ]
 
@@ -106,7 +114,7 @@ for item in indicatorfiles:
 
             #df0 = df0.reset_index(drop=True)
 
-            print(df0['nlpreds'].value_counts())
+            print(df0['predicted_action'].value_counts())
 
 
 
@@ -136,7 +144,7 @@ for item in indicatorfiles:
                 train_data["action_num"] = train_data[f"{col}"].map(action_mapping)
                 return train_data
 
-            train_data = col_to_index("nlpreds")
+            train_data = col_to_index("predicted_action")
             # Define RL parameters
             #states = train_data[["sma-05", "sma-07", "sma-25", "sma-compare", "is_short"]].values  # Include binary_state
             states = train_data[new_cols].values
