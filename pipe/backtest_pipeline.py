@@ -12,24 +12,28 @@ class ProcessData:
     strat_version: str
     input_filename: str
     buy_long_bid_rl: Optional[str] = 'go_long'
-    buy_short_large_rl: Optional[str] = 'go_short'
+    buy_short_large_rl: Optional[str] = 'do_nothing'
     buy_long_small_rl: Optional[str] = 'go_long'
     buy_long_large_rl: Optional[str] = 'go_long'
-    buy_short_bid_rl: Optional[str] = 'go_short'
+    buy_short_bid_rl: Optional[str] = 'do_nothing'
     buy_short_small_rl: Optional[str] = 'go_short'
     
     sell_short_nlp_custom_exit: Optional[str] = 'go_long'
     buy_nlp_short: Optional[str] = 'go_short'
 
+    buy_nlp_long: Optional[str] = 'go_long'
+
 
     
-    def add_buy_sell(self):
+    def add_buy_sell(self, exclude: Optional[list] = None):
         df = pd.read_csv(f'{self.input_filename}')
+        # Remove liquidation and stop loss trades
+        #df = df[(df['exit_reason'] != 'liquidation') & (df['exit_reason'] != 'stop_loss')]
         print(f'data length -->: {len(df)}')
         print(df['exit_reason'].value_counts())
         cols = df.columns
         #self.columns = cols
-        print(cols)
+        #print(cols)
         for _, row in df.iterrows():
             if pd.isna(row.values).any():
                 print(row.value)
@@ -38,13 +42,16 @@ class ProcessData:
 
         if conditions := [
             df['long-large-rl (entry)'] == self.buy_long_large_rl,
-            df['long-small-rl (entry)'] == self.buy_long_small_rl,
             df['long-bid-rl (entry)'] == self.buy_long_bid_rl,
+            #df['long-small-rl (entry)'] == self.buy_long_small_rl,
             #df['nlp-exit-short (entry)'] == self.sell_short_nlp_custom_exit,
+            #df['imit-enter-short (entry)'] == self.buy_nlp_long,
+            #df['imit-exit-short (entry)'] == self.buy_nlp_long,
+            #df['nlp-enter-long (entry)'] == self.buy_nlp_long,
             #df['first-long (entry)'] == True,
             #df['second-long (entry)'] == True,
             #df['short-sig (entry)'] != 1,
-            #df['profit_abs'] > 0,
+            df['profit_abs'] > 0,
             df['volume (entry)'] > 0,
         ]:
             df.loc[
@@ -52,16 +59,18 @@ class ProcessData:
                 ['enter_long', 'action']] = (1, 'go_long')
 
         if conditions2 := [
-            df['short-large-rl (entry)'] == self.buy_short_large_rl,
-            #df['short-small-rl (entry)'] == self.buy_short_small_rl,
+            #df['short-large-rl (entry)'] == self.buy_short_large_rl,
+            df['short-small-rl (entry)'] == self.buy_short_small_rl,
             #df['short-large-rl (entry)'] == self.buy_short_large_rl,
             df['short-bid-rl (entry)'] == self.buy_short_bid_rl,
             #df['long-small-rl (entry)'] != self.buy_long_small_rl,
+            #df['imit-enter-short (entry)'] == self.buy_nlp_short,
+            #df['imit-exit-short (entry)'] == self.buy_nlp_short,
             #df['nlp-enter-short (entry)'] == self.buy_nlp_short,
             #df['first-short (entry)'] == True,
             #df['second-short (entry)'] == True,
             #df['long-sig (entry)'] != 1,
-            #df['profit_abs'] > 0,
+            df['profit_abs'] > 0,
             df['volume (entry)'] > 0
         ]:
             df.loc[
@@ -69,7 +78,7 @@ class ProcessData:
                 ['enter_short', 'action']] = (-1, 'go_short')
 
         if conditions3 := [
-            #df['profit_abs'] <= 0,
+            df['profit_abs'] <= 0,
             df['enter_short'] != -1.0,
             df['enter_long'] != 1.0,
             df['volume (entry)'] > 0
@@ -87,7 +96,7 @@ class ProcessData:
     def select_cols(self):
 
         raw_data = self.add_buy_sell()
-
+        #print(raw_data.columns)
         selected_cols = [
             'open (entry)', 'high (entry)', 'ema-26 (entry)', \
             'ema-12 (entry)', 'low (entry)', 'mean-grad-hist (entry)', \
@@ -112,6 +121,7 @@ class ProcessData:
     
     def export_results_file (self):
         data = self.select_cols()
+        print(data.columns)
         return data.to_csv(f'./clean_data/imitate_{self.strat_version}.csv')
 
 

@@ -31,40 +31,61 @@ import os
     'spreadsheets/rlhf_large_33rl.csv',
     'spreadsheets/rlhf_large_35rl.csv',
     'spreadsheets/rlhf_large_36rl.csv',
-    'spreadsheets/rlhf_large_37rl.csv'
+    'spreadsheets/rlhf_large_37rl.csv',
+    'spreadsheets/rlhf_large_27rl2.csv',
+    'spreadsheets/rlhf_large_38rl.csv',
+    'spreadsheets/rlhf_large_39rl.csv',
+    'spreadsheets/rlhf_large_40rl.csv',
+    'spreadsheets/rlhf_large_40rl_refined.csv',
+    'spreadsheets/rlhf_large_42rl.csv',
+    'spreadsheets/rlhf_large_154nlp.csv',
+    'spreadsheets/rlhf_large_159nlp.csv',
+    'spreadsheets/rlhf_large_46rl.csv',
+    'spreadsheets/rlhf_large_47rl.csv'
 """
 indicatorfiles = [
 
-    'spreadsheets/rlhf_large_37rl.csv'
+    #'spreadsheets/rlhf_small_154nlp_refined.csv',
+    #'spreadsheets/rlhf_large_46rl_refined.csv',
+    'spreadsheets/rlhf_bid_47rl_refined.csv'
+
 ]
 
 Hyperparameters = [
-    #[0.1, 0.9, 0.1, 0.99, 0.995, 4000],
-    #[0.005, 0.75, 0.1, 0.95, 0.999, 12000],
-    #[0.001, 0.75, 1.0, 0.99, 0.99, 30000],
+    [0.5, 0.85, 0.5, 0.997, 0.997, 14000],
+    [0.005, 0.85, 0.005, 0.99, 0.997, 6000],
+    [0.5, 0.75, 0.005, 0.95, 0.999, 14000],
+    [0.001, 0.99, 1.0, 0.95, 0.99, 10000],
+    [0.01, 0.99, 1.0, 0.95, 0.99, 16000],
+    [0.001, 0.75, 1.0, 0.99, 0.99, 30000],
+    [0.1, 0.9, 0.1, 0.99, 0.995, 4000],
+    [0.005, 0.75, 0.1, 0.95, 0.999, 12000],
+    [0.001, 0.75, 1.0, 0.99, 0.99, 30000],
     [1, 0.75, 0.005, 0.95, 0.95, 22000],
-    #[0.01, 0.99, 1.0, 0.95, 0.99, 16000],
     [0.7, 0.99, 1.0, 0.95, 0.997, 8000],
-    #[0.01, 0.95, 1.0, 0.997, 0.995, 26000],
-    #[0.25, 0.95, 0.01, 0.997, 0.999, 14000],
-    #[0.5, 0.85, 0.5, 0.997, 0.997, 14000],
-    #[0.01, 0.85, 0.01, 0.95, 0.95, 12000],
+    [0.01, 0.95, 1.0, 0.997, 0.995, 26000],
+    [0.25, 0.95, 0.01, 0.997, 0.999, 14000],
+    [0.01, 0.85, 0.01, 0.95, 0.95, 12000],
     [0.9, 0.99, 0.5, 0.995, 0.95, 12000],
-    #[0.05, 0.9, 0.5, 0.95, 0.999, 4000],
-    #[0.05, 0.99, 0.5, 0.99, 0.997, 6000],
+    [0.05, 0.9, 0.5, 0.95, 0.999, 4000],
+    [0.05, 0.99, 0.5, 0.99, 0.997, 6000],
     [1, 0.75, 0.05, 0.999, 0.999, 10000],
-    #[0.9, 0.95, 1.0, 0.99, 0.99, 8000],
-    #[0.25, 0.75, 0.01, 0.995, 0.999, 20000],
-    #[0.3, 0.75, 1.0, 0.995, 0.99, 10000],
+    [0.9, 0.95, 1.0, 0.99, 0.99, 8000],
+    [0.25, 0.75, 0.01, 0.995, 0.999, 20000],
+    [0.3, 0.75, 1.0, 0.995, 0.99, 10000],
     [1, 0.9, 1.0, 0.999, 0.999, 10000],
     [0.7, 0.75, 1.0, 0.97, 0.999, 28000],
-    #[0.05, 0.95, 1.0, 0.999, 0.995, 12000],
-    #[0.7, 0.95, 0.5, 0.999, 0.99, 16000],
-    #[0.25, 0.95, 1.0, 0.99, 0.99, 10000],
-    #[0.25, 0.99, 0.01, 0.997, 0.99, 8000],
-    #[1, 0.95, 0.1, 0.96, 0.96, 12000],
-    #[0.9, 0.9, 0.005, 0.95, 0.999, 10000],
-    #[0.05, 0.85, 0.01, 0.997, 0.95, 4000]
+    [0.05, 0.95, 1.0, 0.999, 0.995, 12000],
+    [0.7, 0.95, 0.5, 0.999, 0.99, 16000],
+    [0.25, 0.95, 1.0, 0.99, 0.99, 10000],
+    [0.25, 0.99, 0.01, 0.997, 0.99, 8000],
+    [1, 0.95, 0.1, 0.96, 0.96, 12000],
+    [0.9, 0.9, 0.005, 0.95, 0.999, 10000],
+    [0.05, 0.85, 0.01, 0.997, 0.95, 4000],
+    [0.01, 0.9, 0.5, 0.999, 0.999, 1500],
+    [1, 0.85, 1.0, 0.95, 0.997, 21000],
+    [1, 0.9, 1.0, 0.99, 0.99, 11000]
+
 ]
 
 dfx = pd.read_csv(indicatorfiles[0])
@@ -77,7 +98,7 @@ for item in indicatorfiles:
 
             df0 =  pd.read_csv(f'{item}')
 
-            #df0 = df0[df0['is_short'] == 0]
+            #df0 = df0[(df0['exit_reason'] != 'liquidation') & (df0['exit_reason'] != 'stop_loss')]
 
             df0['ask'] = df0['close'] * df0['volume']/(df0['close'] + df0['open'])
 
@@ -85,11 +106,11 @@ for item in indicatorfiles:
 
             #df0 = df0.reset_index(drop=True)
 
-            df0.head()
+            print(df0['nlpreds'].value_counts())
 
 
 
-            df0.drop(['Unnamed: 0'], axis=1, inplace=True)
+            #df0.drop(['Unnamed: 0'], axis=1, inplace=True)
 
             #df0['action'].value_counts()
 
@@ -111,8 +132,11 @@ for item in indicatorfiles:
 
             # Encode actions into numerical values
             action_mapping = {"go_long": 0, "go_short": 1, "do_nothing": 2}
-            train_data["action_num"] = train_data["nlpreds"].map(action_mapping)
+            def col_to_index(col: str = None) -> DataFrame:
+                train_data["action_num"] = train_data[f"{col}"].map(action_mapping)
+                return train_data
 
+            train_data = col_to_index("nlpreds")
             # Define RL parameters
             #states = train_data[["sma-05", "sma-07", "sma-25", "sma-compare", "is_short"]].values  # Include binary_state
             states = train_data[new_cols].values

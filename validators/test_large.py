@@ -101,7 +101,8 @@ def process_strategy(strat_ver: str, data_size: int):
 
     col_selection = ['open', 'high', \
                     'ema-26', 'ema-12', 'low', 'mean-grad-hist', 'close', 'volume', \
-                    'sma-25', 'long_jcrosk', 'short_kdj', 'sma-05', 'sma-07', 'sma-compare', 'is_short', 'action', 'imit-action', 'nlpreds','reward'
+                    'sma-25', 'long_jcrosk', 'short_kdj', 'sma-05', 'sma-07', 'sma-compare', \
+                    'is_short', 'action', 'imit-action', 'nlpreds','reward'
                 ]
 
     train_data = df[col_selection]
