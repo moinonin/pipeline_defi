@@ -2,11 +2,19 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import confusion_matrix
 from pandas import DataFrame
-import pickle, random
+import random
 from tqdm import tqdm
 from scipy.spatial import KDTree
 import matplotlib.pyplot as plt
-import os
+import os, sys
+
+def prep_data(df: DataFrame) -> DataFrame:
+    train_data = pd.DataFrame()
+    for col in df.columns:
+        col_name = col.split(' ')[0]
+        train_data[f'{col_name}'] = df[col]
+
+    return train_data
 
 #!pip install matplotlib
 """
@@ -47,29 +55,39 @@ import os
 """
 indicatorfiles = [
 
-    #'spreadsheets/rlhf_large_46rl_refined.csv',
-    #'spreadsheets/rlhf_large_159nlp_refined.csv',
-    #'spreadsheets/rlhf_large_65-66-68rl.csv',
-    'spreadsheets/rlhf_large_71rl_refined.csv',
+    #'spreadsheets/rlhf_large_173nlp_balanced.csv',
+    #'spreadsheets/rlhf_large_159nlp.csv',
+    #'spreadsheets/rlhf_large_159nlp_balanced.csv',
+    #'spreadsheets/rlhf_bid_169nlp_refined.csv',
+    #'spreadsheets/rlhf_large_50rl_balanced.csv',
+    #'spreadsheets/rlhf_large_77rl_refined.csv',
+    #'/home/defi/Desktop/portfolio/projects/python/pipeline_defi/clean_data/imitate_large_1073.csv',
+    #'spreadsheets/rlhf_large_174nlp_refined.csv',
+    'spreadsheets/rlhf_large_99rl_refined.csv'
 
 
 
 ]
 
 Hyperparameters = [
-
-    [0.05, 0.95, 0.05, 0.99, 0.95, 8000],
-    [0.5, 0.85, 0.5, 0.997, 0.997, 14000],
+    [0.01, 0.95, 0.997, 0.997, 0.995, 26000],
+    [0.005, 0.85, 0.99, 0.99, 0.997, 6000],
+    [0.001, 0.99, 0.01, 0.99, 0.995, 24000],
+    [0.001, 0.75, 1.0, 0.99, 0.99, 30000],
     [0.005, 0.85, 0.005, 0.99, 0.997, 6000],
+    [1, 0.75, 0.005, 0.95, 0.95, 22000],
+    [0.01, 0.95, 1.0, 0.997, 0.995, 26000],
+    [0.05, 0.95, 0.05, 0.99, 0.95, 8000],
+    [0.2, 0.99, 0.01, 0.99, 0.997, 9000],
+    [0.05, 0.95, 1.0, 0.999, 0.995, 28000],
+    [0.5, 0.85, 0.5, 0.997, 0.997, 14000],
     [0.5, 0.75, 0.005, 0.95, 0.999, 14000],
     [0.001, 0.99, 1.0, 0.95, 0.99, 10000],
     [0.01, 0.99, 1.0, 0.95, 0.99, 16000],
     [0.001, 0.75, 1.0, 0.99, 0.99, 30000],
     [0.1, 0.9, 0.1, 0.99, 0.995, 4000],
     [0.005, 0.75, 0.1, 0.95, 0.999, 12000],
-    [1, 0.75, 0.005, 0.95, 0.95, 22000],
     [0.7, 0.99, 1.0, 0.95, 0.997, 8000],
-    [0.01, 0.95, 1.0, 0.997, 0.995, 26000],
     [0.25, 0.95, 0.01, 0.997, 0.999, 14000],
     [0.01, 0.85, 0.01, 0.95, 0.95, 12000],
     [0.9, 0.99, 0.5, 0.995, 0.95, 12000],
@@ -94,6 +112,9 @@ Hyperparameters = [
     [0.7, 0.9, 0.05, 0.95, 0.95, 20000]
 
 
+
+
+
 ]
 
 dfx = pd.read_csv(indicatorfiles[0])
@@ -108,13 +129,24 @@ for item in indicatorfiles:
 
             #df0 = df0[(df0['exit_reason'] != 'liquidation') & (df0['exit_reason'] != 'stop_loss')]
 
+            #df0 = prep_data(df0)
+
             df0['ask'] = df0['close'] * df0['volume']/(df0['close'] + df0['open'])
 
             df0['bid'] = df0['open'] * df0['volume']/(df0['close'] + df0['open'])
 
-            #df0 = df0.reset_index(drop=True)
-
+            #df0['sma-compare'] = ((df0['sma-07'] > df0['sma-05']) & (df0['sma-25'] > df0['sma-07'])).astype(int)
+            #df0['is_short'] = np.where(df0['enter_reason'] == 'second_buy', 1, 0).astype(int)
+            #df0['reward'] = df0['profit_abs']
+            #df0 = df0[pd.isna(df0['action'] == True)]
+            #df0['action'] = np.where((df0['reward'] > 0) & (df0['is_short'] == 0), 'go_long', np.where((df0['reward'] > 0) & (df0['is_short'] == 1), 'go_short','do_nothing'))
+            #df0.to_csv('spreadsheets/rlhf_large_173nlp.csv')
             print(df0['predicted_action'].value_counts())
+            #sys.exit()
+            #df0 = df0.reset_index(drop=True)
+            #df0['c'] = 2 * 31.86 * df0['close']
+
+
 
 
 
@@ -282,11 +314,11 @@ for item in indicatorfiles:
 
             # Predict an entire range
             for idx, row in train_data.iterrows():
-                state = row[['ask','bid','sma-compare', 'is_short']].values
+                state = row[['ask','bid', 'sma-compare', 'is_short']].values
                 action = predict_action(state, q_table, state_to_index, action_mapping)
                 train_data.loc[idx, "predicted_action"] = action
 
-            train_data['predicted_action'].value_counts()
+            train_data['action'].value_counts()
 
             m = train_data[(train_data['predicted_action'] == 'go_long') & (train_data['reward'] > 0)]
             m['is_short'].value_counts()

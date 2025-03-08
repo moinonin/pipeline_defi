@@ -11,17 +11,27 @@ from typing import Optional
 class ProcessData:
     strat_version: str
     input_filename: str
-    buy_long_bid_rl: Optional[str] = 'go_long'
+    buy_long_bid_rl: Optional[str] = 'go_short'
     buy_short_large_rl: Optional[str] = 'do_nothing'
     buy_long_small_rl: Optional[str] = 'go_long'
     buy_long_large_rl: Optional[str] = 'go_long'
-    buy_short_bid_rl: Optional[str] = 'do_nothing'
+    buy_short_bid_rl: Optional[str] = 'go_long'
     buy_short_small_rl: Optional[str] = 'go_short'
     
-    sell_short_nlp_custom_exit: Optional[str] = 'go_long'
+    sell_short_nlp_custom_exit: Optional[str] = 'go_short'
     buy_nlp_short: Optional[str] = 'go_short'
 
     buy_nlp_long: Optional[str] = 'go_long'
+    buy_long_min_grad: Optional[float] = 0.0
+    
+    buy_regbot_long: Optional[int] = -1
+    buy_regbot_long_count: Optional[int] = 10
+    buy_long_study_candles: Optional[int] = 15
+
+    buy_regbot_short: Optional[int] = 1
+    buy_regbot_short_count: Optional[int] = 13
+    buy_short_study_candles: Optional[int] = 15
+
 
 
     
@@ -36,21 +46,27 @@ class ProcessData:
         #print(cols)
         for _, row in df.iterrows():
             if pd.isna(row.values).any():
-                print(row.value)
+                print(row)
 
-        df.drop(['Unnamed: 0', 'pair'], axis=1, inplace=True)
-
+        df.drop(['Unnamed: 0'], axis=1, inplace=True)
+        #df['long_signal'] = (df[f'regbot_long_{self.buy_regbot_long} (entry)'].rolling(window=self.buy_long_study_candles).apply(lambda x: x.tolist().count(self.buy_regbot_long) >= self.buy_regbot_long_count, raw=False))
+        #df['short_signal'] = (df[f'regbot_short_{self.buy_regbot_short} (entry)'].rolling(window=self.buy_short_study_candles).apply(lambda x: x.tolist().count(self.buy_regbot_short) >= self.buy_regbot_short_count, raw=False))
+        #df = df.dropna(subset=['short_signal', 'long_signal'])
+        print(df.head())
         if conditions := [
-            df['long-large-rl (entry)'] == self.buy_long_large_rl,
+            #df['long-large-rl (entry)'] == self.buy_long_large_rl,
             df['long-bid-rl (entry)'] == self.buy_long_bid_rl,
             #df['long-small-rl (entry)'] == self.buy_long_small_rl,
             #df['nlp-exit-short (entry)'] == self.sell_short_nlp_custom_exit,
+            #df['grads-ratio (entry)'] < self.buy_long_min_grad,
             #df['imit-enter-short (entry)'] == self.buy_nlp_long,
             #df['imit-exit-short (entry)'] == self.buy_nlp_long,
             #df['nlp-enter-long (entry)'] == self.buy_nlp_long,
             #df['first-long (entry)'] == True,
             #df['second-long (entry)'] == True,
             #df['short-sig (entry)'] != 1,
+            #df['long_signal'] == 1,
+            #df['regbot_long_-1 (entry)'] == self.buy_regbot_long,
             df['profit_abs'] > 0,
             df['volume (entry)'] > 0,
         ]:
@@ -60,7 +76,7 @@ class ProcessData:
 
         if conditions2 := [
             #df['short-large-rl (entry)'] == self.buy_short_large_rl,
-            df['short-small-rl (entry)'] == self.buy_short_small_rl,
+            #df['short-small-rl (entry)'] == self.buy_short_small_rl,
             #df['short-large-rl (entry)'] == self.buy_short_large_rl,
             df['short-bid-rl (entry)'] == self.buy_short_bid_rl,
             #df['long-small-rl (entry)'] != self.buy_long_small_rl,
@@ -70,6 +86,8 @@ class ProcessData:
             #df['first-short (entry)'] == True,
             #df['second-short (entry)'] == True,
             #df['long-sig (entry)'] != 1,
+            #df['short_signal'] == 1,
+            #df['regbot_short_1 (entry)'] == self.buy_regbot_short,
             df['profit_abs'] > 0,
             df['volume (entry)'] > 0
         ]:
@@ -98,7 +116,7 @@ class ProcessData:
         raw_data = self.add_buy_sell()
         #print(raw_data.columns)
         selected_cols = [
-            'open (entry)', 'high (entry)', 'ema-26 (entry)', \
+            'pair','open_date','open (entry)', 'high (entry)', 'ema-26 (entry)', \
             'ema-12 (entry)', 'low (entry)', 'mean-grad-hist (entry)', \
             'close (entry)', 'volume (entry)', 'sma-25 (entry)', \
             'long_jcrosk (entry)', 'short_kdj (entry)', \
@@ -107,7 +125,8 @@ class ProcessData:
             'nlp-enter-short (entry)', 'profit_abs', 'enter_reason', \
             'long-small-rl (entry)', 'short-small-rl (entry)', 'long-large-rl (entry)', \
             'short-large-rl (entry)', 'long-bid-rl (entry)', 'short-bid-rl (entry)', 'exit_reason','action', \
-            'nlp-exit-short (entry)'
+            'nlp-exit-short (entry)', 'grads-ratio (entry)', 'regbot_long_-1 (entry)', 'regbot_short_1 (entry)', \
+            'long_signal', 'short_signal'
         ]
         print(raw_data.exit_reason.value_counts())
         found_cols = []
